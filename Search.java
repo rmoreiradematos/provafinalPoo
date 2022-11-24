@@ -1,4 +1,6 @@
 public class Search{
+  //classe inicial
+
 
   public void getByID(int id){
     // search by id

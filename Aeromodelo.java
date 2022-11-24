@@ -1,4 +1,5 @@
 public class Aeromodelo {
+  //classe inicial
   private int id;
   private String marca;
   private String modelo;

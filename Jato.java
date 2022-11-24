@@ -1,4 +1,5 @@
 public class Jato {
+  //classe inicial
   private String cor;
   private int velocidade;
 
