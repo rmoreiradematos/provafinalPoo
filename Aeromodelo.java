@@ -4,6 +4,15 @@ public class Aeromodelo {
   private String marca;
   private String modelo;
 
+  public Aeromodelo(){
+
+  }
+
+  public Aeromodelo(String marca, String modelo) {
+    this.marca = marca;
+    this.modelo = modelo;
+  }
+  
   public Aeromodelo(int id, String marca, String modelo) {
     this.id = id;
     this.marca = marca;
