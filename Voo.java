@@ -1,5 +1,12 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
+
+
 public class Voo {
   private int id;
+  private Generic<String,Integer> numero;
   private String data;
   private String hora;
   private String origem;
@@ -11,59 +18,19 @@ public class Voo {
   private Pista pista;
   private int idAviao;
   private Aviao aviao;
-  private int idHeliciptero;
+  private int idHelicoptero;
   private Helicoptero helicoptero;
   private int idJato;
   private Jato jato;
 
 
-  
-
-  public static void main(String[] args){
-    Voo voo = new Voo();
-    voo.setId(1);
-    voo.setData("01/01/2010");
-    voo.setHora("10:00");
-    voo.setOrigem("São Paulo");
-    voo.setDestino("Rio de Janeiro");
-    voo.setPiloto("João");
-    voo.setCopiloto("José");
-    voo.setObservacao("Voo de teste");
-    voo.setIdPista(1);
-    voo.setIdAviao(1);
-    voo.setIdHeliciptero(1);
-    voo.setIdJato(1);
-    voo.setPista(new Pista(1, "Pista 1"));
-    voo.setAviao(new Aviao());
-    voo.setHelicoptero(new Helicoptero());
-    voo.setJato(new Jato());
-
-    Voo voo2 = new Voo();
-    voo2.setId(1);
-    voo2.setData("01/01/2011");
-    voo2.setHora("10:00");
-    voo2.setOrigem("São Paulo");
-    voo2.setDestino("Santa Catarina");
-    voo2.setPiloto("João");
-    voo2.setCopiloto("José");
-    voo2.setObservacao("Voo de teste");
-    voo2.setIdPista(1);
-    voo2.setIdAviao(1);
-    voo2.setIdHeliciptero(1);
-    voo2.setIdJato(1);
-    voo2.setPista(new Pista(1, "Pista 1"));
-    voo2.setAviao(new Aviao());
-    voo2.setHelicoptero(new Helicoptero());
-    voo2.setJato(new Jato());
-    System.out.println(voo.equals(voo2));
-  }
-
   public Voo(){
 
   }
 
-  public Voo(int id, String data, String hora, String origem, String destino, String piloto, String copiloto, String observacao, int idPista, int idAviao, int idHeliciptero, int idJato) {
+  public Voo(int id, Generic<String,Integer> numero, String data, String hora, String origem, String destino, String piloto, String copiloto, String observacao, int idPista, Pista pista, int idHelicoptero, Helicoptero helicoptero, int idJato, Jato jato, int idAviao, Aviao aviao) {
     this.id = id;
+    this.numero = numero;
     this.data = data;
     this.hora = hora;
     this.origem = origem;
@@ -73,12 +40,67 @@ public class Voo {
     this.observacao = observacao;
     this.idPista = idPista;
     this.idAviao = idAviao;
-    this.idHeliciptero = idHeliciptero;
+    this.idHelicoptero = idHelicoptero;
     this.idJato = idJato;
+
+    try{
+      PreparedStatement preparacao  = DAO.createConnection().prepareStatement("INSERT INTO voo (id, numero, data, hora, origem, destino, piloto, copiloto, observacao, idPista, idAviao, idHelicoptero, idJato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      if(idAviao!= 0){
+        preparacao.setInt(1, id);
+        preparacao.setString(2, numero.toString());
+        preparacao.setString(3, data);
+        preparacao.setString(4, hora);
+        preparacao.setString(5, origem);
+        preparacao.setString(6, destino);
+        preparacao.setString(7, piloto);
+        preparacao.setString(8, copiloto);
+        preparacao.setString(9, observacao);
+        preparacao.setInt(10, idPista);
+        preparacao.setInt(11, idAviao);
+        preparacao.setNull(12, Types.NULL);
+        preparacao.setNull(13, Types.NULL);
+        preparacao.execute();
+        preparacao.close();
+      }else if (idHelicoptero != 0){
+        preparacao.setInt(1, id);
+        preparacao.setString(2, numero.toString());
+        preparacao.setString(3, data);
+        preparacao.setString(4, hora);
+        preparacao.setString(5, origem);
+        preparacao.setString(6, destino);
+        preparacao.setString(7, piloto);
+        preparacao.setString(8, copiloto);
+        preparacao.setString(9, observacao);
+        preparacao.setInt(10, idPista);
+        preparacao.setInt(11, Types.NULL);
+        preparacao.setNull(12, Types.NULL);
+        preparacao.setNull(13, idJato);
+        preparacao.execute();
+        preparacao.close();
+      }else{
+        preparacao.setInt(1, id);
+        preparacao.setString(2, numero.toString());
+        preparacao.setString(3, data);
+        preparacao.setString(4, hora);
+        preparacao.setString(5, origem);
+        preparacao.setString(6, destino);
+        preparacao.setString(7, piloto);
+        preparacao.setString(8, copiloto);
+        preparacao.setString(9, observacao);
+        preparacao.setInt(10, idPista);
+        preparacao.setInt(11, Types.NULL);
+        preparacao.setNull(12, idHelicoptero);
+        preparacao.setNull(13, Types.NULL);
+        preparacao.execute();
+        preparacao.close();
+      }
+    }catch(Exception e){
+      System.out.println(e);
+    }
 
   }
 
-  public Voo(String data, String hora, String origem, String destino, String piloto, String copiloto, String observacao, int idPista, int idAviao, int idHeliciptero, int idJato) {
+  public Voo(String data, String hora, String origem, String destino, String piloto, String copiloto, String observacao, int idPista, int idAviao, int idHelicoptero, int idJato) {
     this.data = data;
     this.hora = hora;
     this.origem = origem;
@@ -88,7 +110,7 @@ public class Voo {
     this.observacao = observacao;
     this.idPista = idPista;
     this.idAviao = idAviao;
-    this.idHeliciptero = idHeliciptero;
+    this.idHelicoptero = idHelicoptero;
     this.idJato = idJato;
   }
 
@@ -98,6 +120,14 @@ public class Voo {
 
   public void setId(int id) {
     this.id = id;
+  }
+
+  public Generic<String, Integer> getNumero() {
+    return numero;
+  }
+
+  public void setNumero(Generic<String, Integer> numero) {
+    this.numero = numero;
   }
 
   public String getData() {
@@ -188,12 +218,12 @@ public class Voo {
     this.aviao = aviao;
   }
 
-  public int getIdHeliciptero() {
-    return idHeliciptero;
+  public int getidHelicoptero() {
+    return idHelicoptero;
   }
 
-  public void setIdHeliciptero(int idHeliciptero) {
-    this.idHeliciptero = idHeliciptero;
+  public void setidHelicoptero(int idHelicoptero) {
+    this.idHelicoptero = idHelicoptero;
   }
 
   public Helicoptero getHelicoptero() {
@@ -235,7 +265,7 @@ public class Voo {
             ", pista=" + pista +
             ", idAviao=" + idAviao +
             ", aviao=" + aviao +
-            ", idHeliciptero=" + idHeliciptero +
+            ", idHelicoptero=" + idHelicoptero +
             ", helicoptero=" + helicoptero +
             ", idJato=" + idJato +
             ", jato=" + jato +
@@ -243,51 +273,148 @@ public class Voo {
   }
 
 
-  // @Override
-  // public boolean equals(Object obj){
-  //   if(obj == null){
-  //     return false;
-  //   }
-  //   if(getClass() != obj.getClass()){
-  //     return false;
-  //   }
-  //   final Voo other = (Voo) obj;
-  //   if(this.id != other.id){
-  //     return false;
-  //   }
-  //   if((this.data == null) ? (other.data != null) : !this.data.equals(other.data)){
-  //     return false;
-  //   }
-  //   if((this.hora == null) ? (other.hora != null) : !this.hora.equals(other.hora)){
-  //     return false;
-  //   }
-  //   if((this.origem == null) ? (other.origem != null) : !this.origem.equals(other.origem)){
-  //     return false;
-  //   }
-  //   if((this.destino == null) ? (other.destino != null) : !this.destino.equals(other.destino)){
-  //     return false;
-  //   }
-  //   if((this.piloto == null) ? (other.piloto != null) : !this.piloto.equals(other.piloto)){
-  //     return false;
-  //   }
-  //   if((this.copiloto == null) ? (other.copiloto != null) : !this.copiloto.equals(other.copiloto)){
-  //     return false;
-  //   }
-  //   if((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)){
-  //     return false;
-  //   }
-  //   if(this.idPista != other.idPista){
-  //     return false;
-  //   }
-  //   if(this.idAviao != other.idAviao){
-  //     return false;
-  //   }
-  //   if(this.idHeliciptero != other.idHeliciptero){
-  //     return false;
-  //   }
-  //   if(this.idJato != other.idJato){
-  //     return false;
-  //   }
-  //   return true;
-  // }
+  @Override
+  public boolean equals(Object obj){
+    if(obj == null){
+      return false;
+    }
+    if(getClass() != obj.getClass()){
+      return false;
+    }
+    final Voo other = (Voo) obj;
+    if(this.id != other.id){
+      return false;
+    }
+    if((this.data == null) ? (other.data != null) : !this.data.equals(other.data)){
+      return false;
+    }
+    if((this.hora == null) ? (other.hora != null) : !this.hora.equals(other.hora)){
+      return false;
+    }
+    if((this.origem == null) ? (other.origem != null) : !this.origem.equals(other.origem)){
+      return false;
+    }
+    if((this.destino == null) ? (other.destino != null) : !this.destino.equals(other.destino)){
+      return false;
+    }
+    if((this.piloto == null) ? (other.piloto != null) : !this.piloto.equals(other.piloto)){
+      return false;
+    }
+    if((this.copiloto == null) ? (other.copiloto != null) : !this.copiloto.equals(other.copiloto)){
+      return false;
+    }
+    if((this.observacao == null) ? (other.observacao != null) : !this.observacao.equals(other.observacao)){
+      return false;
+    }
+    if(this.idPista != other.idPista){
+      return false;
+    }
+    if(this.idAviao != other.idAviao){
+      return false;
+    }
+    if(this.idHelicoptero != other.idHelicoptero){
+      return false;
+    }
+    if(this.idJato != other.idJato){
+      return false;
+    }
+    return true;
+  }
+
+  public static void update(int id, String numero, String data, String hora, String origem, String destino, String piloto, String copiloto, String observacao, int idPista, Pista pista, int idHelicoptero, Helicoptero helicoptero, int idJato, Jato jato, int idAviao, Aviao aviao){
+    
+    Connection con = DAO.createConnection();
+    try{
+      PreparedStatement preparacao = con.prepareStatement("UPDATE voo SET numero = ?, data = ?, hora = ?, origem = ?, destino = ?, piloto = ?, copiloto = ?, observacao = ?, idPista = ?, idHelicoptero = ?, idJato = ?, idAviao = ? WHERE id = ?");
+      preparacao.setString(1, numero);
+      preparacao.setString(2, data);
+      preparacao.setString(3, hora);
+      preparacao.setString(4, origem);
+      preparacao.setString(5, destino);
+      preparacao.setString(6, piloto);
+      preparacao.setString(7, copiloto);
+      preparacao.setString(8, observacao);
+      preparacao.setInt(9, idPista);
+      if(idHelicoptero != 0){
+        preparacao.setInt(10, idHelicoptero);
+      }else if(idJato != 0){
+        preparacao.setInt(10, idJato);
+      }else{
+        preparacao.setInt(12, idAviao);
+      }
+      preparacao.setInt(13, id);
+      preparacao.execute();
+      preparacao.close();
+      con.close();
+    }catch(Exception e){
+      System.out.println(e);
+    }
+  }
+
+  public static void delete(int id){
+    Connection con = DAO.createConnection();
+    try{
+      PreparedStatement preparacao = con.prepareStatement("DELETE FROM voo WHERE id = ?");
+      preparacao.setInt(1, id);
+      preparacao.execute();
+      preparacao.close();
+      con.close();
+    }catch(Exception e){
+      System.out.println(e);
+    }
+  }
+
+  public static void getAll(){
+    Connection con = DAO.createConnection();
+    try{
+      PreparedStatement preparacao = con.prepareStatement("SELECT * FROM voo");
+      ResultSet resultado = preparacao.executeQuery();
+      while(resultado.next()){
+        System.out.println("ID: " + resultado.getInt("id"));
+        System.out.println("Numero: " + resultado.getString("numero"));
+        System.out.println("Data: " + resultado.getString("data"));
+        System.out.println("Hora: " + resultado.getString("hora"));
+        System.out.println("Origem: " + resultado.getString("origem"));
+        System.out.println("Destino: " + resultado.getString("destino"));
+        System.out.println("Piloto: " + resultado.getString("piloto"));
+        System.out.println("Copiloto: " + resultado.getString("copiloto"));
+        System.out.println("Observacao: " + resultado.getString("observacao"));
+        System.out.println("ID Pista: " + resultado.getInt("idPista"));
+        System.out.println("ID Helicoptero: " + resultado.getInt("idHelicoptero"));
+        System.out.println("ID Jato: " + resultado.getInt("idJato"));
+        System.out.println("ID Aviao: " + resultado.getInt("idAviao"));
+      }
+    }catch(Exception e){
+      System.out.println(e);
+    }
+  }
+
+  public static Voo getByID(int id){
+    Connection con = DAO.createConnection();
+    try{
+      PreparedStatement preparacao = con.prepareStatement("SELECT * FROM voo WHERE id = ?");
+      preparacao.setInt(1, id);
+      ResultSet resultado = preparacao.executeQuery();
+      while(resultado.next()){
+        return new Voo(resultado.getString("data"), resultado.getString("hora"), resultado.getString("origem"), resultado.getString("destino"), resultado.getString("piloto"), resultado.getString("copiloto"), resultado.getString("observacao"), resultado.getInt("idPista"), resultado.getInt("idHelicoptero"), resultado.getInt("idJato"), resultado.getInt("idAviao"));
+      }
+    }catch(Exception e){
+      System.out.println(e);
+    }
+    return null;
+  }
+
+  static int getUltimoId(){
+    Connection con = DAO.createConnection();
+    try{
+      PreparedStatement preparacao = con.prepareStatement("SELECT MAX(id) FROM voo");
+      ResultSet resultado = preparacao.executeQuery();
+      while(resultado.next()){
+        return resultado.getInt("MAX(id)");
+      }
+    }catch(Exception e){
+      System.out.println(e);
+    }
+    return 0;
+  }
 }
